@@ -1,4 +1,4 @@
-module GolangFiberCRM
+module github.com/dawiddzhafarov/GoProjects/GolangFiberCRM
 
 go 1.18
 
@@ -6,6 +6,8 @@ require (
 	github.com/gofiber/fiber v1.14.6
 	github.com/jinzhu/gorm v1.9.16
 )
+
+require github.com/mattn/go-sqlite3 v1.14.0 // indirect
 
 require (
 	github.com/andybalholm/brotli v1.0.0 // indirect

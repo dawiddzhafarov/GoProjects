@@ -6,5 +6,5 @@ import (
 )
 
 var (
-	dbConn *gorm.DB
+	DBConn *gorm.DB
 )

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"C"
 	"fmt"
 	"github.com/dawiddzhafarov/GoProjects/GolangFiberCRM/database"
 	"github.com/dawiddzhafarov/GoProjects/GolangFiberCRM/lead"

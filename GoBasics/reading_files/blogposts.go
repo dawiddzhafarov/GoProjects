@@ -10,6 +10,9 @@ import (
 	"strings"
 )
 
+// added wrong format handling, omitting wrong files unless they are the only type
+// present in the directory,then returning an error
+
 type Post struct {
 	Title, Description string
 	Tags               []string
@@ -29,16 +32,20 @@ func NewPostsFromFS(fileSystem fs.FS) ([]Post, error) {
 		return nil, err
 	}
 	var posts []Post
-
+	filesCounter := 0
 	for _, f := range dir {
 		if !strings.HasSuffix(f.Name(), ".md") {
-			return nil, errors.New("File not supported")
+			continue
 		}
 		post, err := getPost(fileSystem, f.Name())
 		if err != nil {
 			return nil, err
 		}
 		posts = append(posts, post)
+		filesCounter++
+	}
+	if filesCounter == 0 {
+		return nil, errors.New("No '.md' file was detected")
 	}
 	return posts, nil
 }

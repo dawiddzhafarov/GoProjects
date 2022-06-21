@@ -53,23 +53,44 @@ World`,
 }
 
 func TestWrongFormat(t *testing.T) {
-	fs := fstest.MapFS{
-		"hello world.md":  {Data: []byte(firstBody)},
-		"hello world.txt": {Data: []byte(firstBody)},
-	}
-	posts, err := blogposts.NewPostsFromFS(fs)
-	if err == nil {
-		t.Errorf("Should get wrong file format error")
-	}
-	got := posts[1]
-	want := blogposts.Post{
-		Title:       "Post 1",
-		Description: "Description 1",
-		Tags:        []string{"tdd", "go"},
-		Body: `Hello
+	t.Run("wrong format file with correct ones", func(t *testing.T) {
+		fs := fstest.MapFS{
+			"hello world.md":   {Data: []byte(firstBody)},
+			"hello world2.txt": {Data: []byte(firstBody)},
+			"hello world3.md":  {Data: []byte(secondBody)},
+		}
+		posts, err := blogposts.NewPostsFromFS(fs)
+		if err != nil {
+			t.Errorf("Shouldnt get an error but did")
+		}
+		got := posts[0]
+		want := blogposts.Post{
+			Title:       "Post 1",
+			Description: "Description 1",
+			Tags:        []string{"tdd", "go"},
+			Body: `Hello
 World`,
-	}
-	assertPost(t, got, want)
+		}
+		if len(posts) != 2 {
+			t.Errorf("should get 2 posts, but got %d", len(posts))
+		}
+		assertPost(t, got, want)
+	})
+
+	t.Run("only incorrect files format", func(t *testing.T) {
+		fs := fstest.MapFS{
+			"hello world2.txt": {Data: []byte(firstBody)},
+		}
+		posts, err := blogposts.NewPostsFromFS(fs)
+		if err == nil {
+			t.Errorf("Shouldnt get an error but did")
+		}
+
+		if len(posts) != 0 {
+			t.Errorf("Shouldnt create any posts, but created %d", (len(posts)))
+		}
+	})
+
 }
 
 func TestReadFileError(t *testing.T) {

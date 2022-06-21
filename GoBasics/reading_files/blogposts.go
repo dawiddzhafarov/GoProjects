@@ -58,6 +58,9 @@ func getPost(fileSystem fs.FS, fileName string) (Post, error) {
 	defer postFile.Close()
 	return newPost(postFile)
 }
+func (post Post) SanitisedTitle() string {
+	return strings.ToLower(strings.Replace(post.Title, " ", "-", -1))
+}
 
 func newPost(postBody io.Reader) (Post, error) {
 	scanner := bufio.NewScanner(postBody)

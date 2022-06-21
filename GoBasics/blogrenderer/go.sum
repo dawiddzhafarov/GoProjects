@@ -1,0 +1,6 @@
+github.com/approvals/go-approval-tests v0.0.0-20220530063708-32d5677069bd h1:8j7sBEy0h6+Bvr0AeKHIHCsmzCzWGXAQweA7k+uiRYk=
+github.com/approvals/go-approval-tests v0.0.0-20220530063708-32d5677069bd/go.mod h1:PJOqSY8IofNv3heAD6k8E7EfFS6okiSS9bSAasaAUME=
+github.com/dawiddzhafarov/GoProjects/GoBasics/reading_files v0.0.0-20220621085227-dbfa06f2e31f h1:LA1bkNafIogfFLbd13q8AIANVdzUW0uKMu4DLL/QPOI=
+github.com/dawiddzhafarov/GoProjects/GoBasics/reading_files v0.0.0-20220621085227-dbfa06f2e31f/go.mod h1:PlFBlrBQTksjjBm/atOHetGPD/6HcuqAo+YaYGYMzSY=
+github.com/gomarkdown/markdown v0.0.0-20220607163217-45f7c050e2d1 h1:wAupuFkZ/yq219/mSbqDtMfUZQY0gTYEtoz3/LKtppU=
+github.com/gomarkdown/markdown v0.0.0-20220607163217-45f7c050e2d1/go.mod h1:JDGcbDT52eL4fju3sZ4TeHGsQwhG9nbDV21aMyhwPoA=

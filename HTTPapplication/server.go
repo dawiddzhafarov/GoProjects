@@ -5,15 +5,25 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"html/template"
+	"io"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
 const jsonContentType = "application/json"
+const htmlTemplatePath = "game.html"
+
+var wsUpgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
 
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
+	template *template.Template
+	game     Game
 }
 
 type Player struct {
@@ -21,37 +31,39 @@ type Player struct {
 	Wins int
 }
 
-func NewPlayerServer(store PlayerStore) *PlayerServer {
+func NewPlayerServer(store PlayerStore, game Game) (*PlayerServer, error) {
 	p := new(PlayerServer)
+
+	tmpl, err := template.ParseFiles(htmlTemplatePath)
+	if err != nil {
+		return nil, fmt.Errorf("problem opening %s %v", htmlTemplatePath, err)
+	}
+	p.template = tmpl
 	p.store = store
+	p.game = game
+
 	router := http.NewServeMux()
 	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
 	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
-	router.Handle("/game", http.HandlerFunc(p.game))
+	router.Handle("/game", http.HandlerFunc(p.playGame))
 	router.Handle("/ws", http.HandlerFunc(p.webSocket))
 	p.Handler = router
-	return p
+	return p, nil
 }
 
 func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
-	upgrader := websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-	}
-	conn, _ := upgrader.Upgrade(w, r, nil)
-	_, winnerMsg, _ := conn.ReadMessage()
-	p.store.RecordWin(string(winnerMsg))
+	conn, _ := wsUpgrader.Upgrade(w, r, nil)
+
+	_, numberOfPlayersMsg, _ := conn.ReadMessage()
+	numberOfPlayers, _ := strconv.Atoi(string(numberOfPlayersMsg))
+	p.game.Start(numberOfPlayers, io.Discard)
+
+	_, winner, _ := conn.ReadMessage()
+	p.game.Finish(string(winner))
 }
 
-func (p *PlayerServer) game(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("game.html")
-
-	if err != nil {
-		http.Error(w, fmt.Sprintf("problem loading template %s", err.Error()), http.StatusInternalServerError)
-		return
-	}
-
-	tmpl.Execute(w, nil)
+func (p *PlayerServer) playGame(w http.ResponseWriter, r *http.Request) {
+	p.template.Execute(w, nil)
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
